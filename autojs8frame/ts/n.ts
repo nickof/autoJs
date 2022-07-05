@@ -32,8 +32,6 @@ function get_configNum(configKey: string) {
 }
 
 
-
-
 function thread_force_stop(thread: AutoJs.Thread) {
     thread.interrupt();
 
