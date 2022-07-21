@@ -2,6 +2,7 @@
 exports.__esModule = true;
 exports["default"] = {
     uiSelectCondition: uiSelectCondition,
+    secex: secex,
     boolConditionOrUiobj: boolConditionOrUiobj,
     g_r_rect: g_r_rect,
     getNodeNormal: getNodeNormal,
@@ -22,6 +23,13 @@ exports["default"] = {
     thread_force_stop: thread_force_stop,
     get_configNum: get_configNum
 };
+function secex(sec, str) {
+    var t = sec;
+    for (var i = 0; i < sec; i++) {
+        toast(str + "\n" + "sec:" + t--);
+        sleep(1000);
+    }
+}
 function get_configNum(configKey) {
     var tp = storages.create("lggirlggir@163.com");
     var tp2 = tp.get(configKey, 0);
@@ -279,6 +287,13 @@ function c_wait(jobj, jobj2, timeOut) {
     }
     return null;
 }
+/**
+ *
+ * @param jobj
+ * @param jobj2
+ * @param timeOut
+ * @returns
+ */
 function cR_wait(jobj, jobj2, timeOut) {
     var uiObj = c_rect(jobj);
     if (uiObj) {

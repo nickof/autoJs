@@ -2,6 +2,7 @@ import { autojs } from "__app__";
 
 export default {
     uiSelectCondition
+    , secex
     , boolConditionOrUiobj
     , g_r_rect
     , getNodeNormal
@@ -23,6 +24,14 @@ export default {
     , get_configNum
 }
 
+function secex(sec: number, str: string) {
+    let t = sec
+    for (let i = 0; i < sec; i++) {
+        toast(str + "\n" + "sec:" + t--)
+        sleep(1000)
+    }
+}
+
 function get_configNum(configKey: string) {
 
     let tp = storages.create("lggirlggir@163.com")
@@ -30,6 +39,7 @@ function get_configNum(configKey: string) {
     return tp2
 
 }
+
 
 
 function thread_force_stop(thread: AutoJs.Thread) {
@@ -257,8 +267,7 @@ function getNodeNormal(jobjCondition: AutoJs.UiSelector): AutoJs.UiObject | null
     if (uiObj) {
         log("getNodeNormal-" + uiObj.bounds());
     }
-    return uiObj;
-
+    return uiObj
 }
 
 /**
@@ -330,6 +339,13 @@ function c_wait(jobj: any, jobj2: any, timeOut: any): AutoJs.UiObject | null {
     return null
 }
 
+/**
+ * 
+ * @param jobj 
+ * @param jobj2 
+ * @param timeOut 
+ * @returns 
+ */
 function cR_wait(jobj: any, jobj2: any, timeOut: any): AutoJs.UiObject | null {
 
     let uiObj = c_rect(jobj)
@@ -530,6 +546,8 @@ function c_rect(jobj: AutoJs.UiObject | null | any): AutoJs.UiObject | null {
         log("c_rect-condition-not-found-node")
         return null
     }
+
+
 
 }
 
