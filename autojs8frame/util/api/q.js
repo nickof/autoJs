@@ -6,7 +6,6 @@ qEx.secex = (sec, str) => {
         toast(str + "\n" + "sec:" + t--)
     }
 }
-
 ///scriptAutoJs/test/util/api/qHttpRequestProceed.js
 module.exports = qEx
 
@@ -80,9 +79,7 @@ function httpGetObj(httpObj, timeOut) {
     log("body=" + res.body.string())
     // return res.body.string(  )
 
-
     log_function("httpGetObj")
-
     // log("code = " + r.statusCode);
     // log("html = " + r.body.string());
 

@@ -2,7 +2,7 @@ const { default: n } = require("../../ts/n.js");
 
 const cfg = {
     debug: false
-    , timeOut: 60000
+    , timeOut: 20000
 }
 
 const req = {}
@@ -18,7 +18,7 @@ req.newMiddleware = (host, head, para, timeOut, bytes) => {
 
     log_function("newMiddleware")
 
-    let err = null
+    let err
     let functionName = "newMiddleware "
 
     if (host == undefined) {
@@ -28,11 +28,10 @@ req.newMiddleware = (host, head, para, timeOut, bytes) => {
     }
     log(host)
 
-    if (typeof head == undefined) {
-        // head = null
-    }
-    else if (typeof head != "object") {
-        err = functionName + "head type err,type=" + typeof head + "need object"
+    if (typeof head == "undefined") {
+
+    } else if (typeof head != "object") {
+        err = functionName + "head type err,type=" + typeof head + " need object"
     }
 
     if (para === undefined) {
@@ -46,7 +45,6 @@ req.newMiddleware = (host, head, para, timeOut, bytes) => {
     } else if (typeof timeOut != "number") {
         err = "timeOut type err type=" + typeof (timeOut) + " ,need number"
     }
-
     log_function("newMiddleware")
 
     return {
@@ -81,16 +79,16 @@ const urlHttpProceed = (url) => {
 req.get = (url, data, head, newMiddleware) => {
 
     log_function("req.GET")
-    log(newMiddleware.err)
-
-    if (newMiddleware.err != null) {
-        n.secex(5, err)
-        return null
+    if (newMiddleware != undefined) {
+        if (newMiddleware.err != undefined) {
+            n.secex(5, newMiddleware.err)
+            return null
+        }
     }
 
     //log_function("GET")
-    http.__okhttp__.setTimeout(newMiddleware.timeOut);
     let newUrl;
+    http.__okhttp__.setTimeout(newMiddleware.timeOut);
     if (newMiddleware.host != "") {
         newUrl = newMiddleware.host + url
     } else {
@@ -118,7 +116,7 @@ req.get = (url, data, head, newMiddleware) => {
         fullUrl = newUrl + "?" + req.qs(newData)  //https://pan.baidu.com/rest/2.0/xpan/file?access_token=xxxxxxxx&dir=
     }
 
-    console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 121 ~ fullUrl\n", fullUrl)
+    console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 119 ~ fullUrl\n", fullUrl)
 
     let newHead = {}
     if (newMiddleware.head != null) {
@@ -138,12 +136,18 @@ req.get = (url, data, head, newMiddleware) => {
             console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 138 ~ newHead\n", key + ":" + newHead[key])
         }
     }
+    let res;
+    try {
+        res = http.get(fullUrl, {
+            headers: newHead
+        });
+    } catch (error) {
+        n.secex(5, "get-catch-err=" + error)
+        console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 144 ~ error", error)
+        return null
+    }
 
-    let res = http.get(fullUrl, {
-        headers: newHead
-    });
 
-    //
     if (res.statusCode !== 200) {
         let body = res.body.string()
         console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 149 ~ statusCode-err", res.statusCode + "\n"
@@ -160,7 +164,6 @@ req.get = (url, data, head, newMiddleware) => {
         body = res.body.bytes()
         console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 159 ~ get return bytes", "")
     }
-
     return body
 
 }

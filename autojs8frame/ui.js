@@ -15,7 +15,6 @@ var uiEx = {
     , ui_set: function () {
         ui_set_()
     }
-
 }
 
 module.exports = uiEx

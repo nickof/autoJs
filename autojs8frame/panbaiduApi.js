@@ -4,6 +4,7 @@
 const req = require("./util/api/qHttpRequestProceed")
 const { default: n } = require("./ts/n.js");
 const { secex } = require("./util/api/q");
+const { newMiddleware } = require("./util/api/qHttpRequestProceed");
 
 const baiduReqMiddle = req.newMiddleware("https://pan.baidu.com"
     , { 'User-Agent': 'pan.baidu.com' }
@@ -21,7 +22,14 @@ api.panBaidu = {
         let body = req.get("/rest/2.0/xpan/file", { dir: dir, method: 'list' }, null, baiduReqMiddle)
         return body
     },
+    getFsidbyPath: (path) => {
 
+    },
+    /**
+     * 
+     * @param {*} dir 
+     * @returns string [fsid,fsid]
+     */
     getFileListAllFsid: function (dir) {
         //rlog.log_function("getFileListAllFsid")
         let body = req.get("/rest/2.0/xpan/file", { dir: dir, method: 'list' }, {}, baiduReqMiddle)
@@ -31,13 +39,15 @@ api.panBaidu = {
             body = JSON.parse(body)
         }
 
+
+
         let arr = []
         body.list.forEach(element => {
             // log(element)
             arr.push(element.fs_id)
         });
         if (arr[0] == null) {
-            console.log("🚀 ~ file: panbaiduApi.js ~ line 47 ~ arr", "文件数为0")
+            console.log("🚀 ~ file: panbaiduApi.js ~ line 49 ~ arr", "文件数为0")
             return null
         } else {
             arr = "[" + arr.toString() + "]"
@@ -52,7 +62,7 @@ api.panBaidu = {
      * @returns 
      */
     getDownLoadUrlAllByFsid: (fsid) => {
-        console.log("🚀 ~ file: panbaiduApi.js ~ line 46 ~ fsid", fsid)
+        console.log("🚀 ~ file: panbaiduApi.js ~ line 64 ~ fsid", fsid)
         let ret = this.panBaidu.getDownLoadUrlAllByFsidArray("[" + fsid + "]")
         if (ret != undefined) {
             for (let key in ret[0]) {
@@ -60,14 +70,15 @@ api.panBaidu = {
             }
         }
         return null
-    }
+    },
     /**
-     * fs_idArray:[ fsid ]
-    return:[ "filename":"url" ] 
-    */
-    , getDownLoadUrlAllByFsidArray: (fs_idArray) => {
+     * 
+     * @param {*} fs_idArray 
+     * @returns array [ { filename:downloadUrl } ]
+     */
+    getDownLoadUrlAllByFsidArray: (fs_idArrayString) => {
         let body = req.get("/rest/2.0/xpan/multimedia"
-            , { method: 'filemetas', fsids: fs_idArray, dlink: 1 }
+            , { method: 'filemetas', fsids: fs_idArrayString, dlink: 1 }
             , null, baiduReqMiddle)
         let arr = []
         if (body) {
@@ -80,15 +91,18 @@ api.panBaidu = {
                 arr.push(obj)
             });
         } else if (body == undefined) {
-            console.log("🚀 ~ file: panbaiduApi.js ~ line 61 ~getDownLoadUrlAllByFsidArray undefined", "")
+            console.log("🚀 ~ file: panbaiduApi.js ~ line 93 ~getDownLoadUrlAllByFsidArray undefined", "")
             return null
         }
         if (arr[0] == null) {
             console.log("🚀 ~ file: panbaiduApi.js ~ line 94 ~ arr", "文件数为0")
             return null
         }
+        console.log("🚀 ~ file: panbaiduApi.js ~ line 103 ~ getDownLoadUrlAllByFsidArray-suc.."
+            , arr[0].toString())
         return arr
     }
+
     , panDownLoad: (downUrl, path) => {
         let body = req.get(downUrl + "&" + req.qs(baiduReqMiddle.para)
             , null
@@ -99,30 +113,136 @@ api.panBaidu = {
             files.write(path, body)
         }
     },
-
     /**
      * 
-     * @param { 网盘路径 }} path 
+     * @param {*} panPath 
      */
-    downLoadFileByPath: (panPath, localPath) => {
+    getDownUrlByPath: (panPath) => {
+
         let arr = panPath.split("/")
         if (arr.length < 2) {
-            console.log("🚀 ~ file: panbaiduApi.js ~ line 108 ~ length", length)
+            console.log("🚀 ~ file: panbaiduApi.js ~ line 120 ~  getDownUrlByPath length", length)
             secex(5, "downLoadFileByPath-网盘路径格式错误" + panPath)
             return null
         }
         let filename = arr[arr.length - 1]
         let panPathRoot = ""
-        console.log("🚀 ~ file: panbaiduApi.js ~ line 108 ~ filename", filename)
+        console.log("🚀 ~ file: panbaiduApi.js ~ line 126 ~ filename", filename)
 
         for (let i = 1; i < arr.length - 1; i++) {
             panPathRoot = panPathRoot + "/" + arr[i]
         }
-        console.log("🚀 ~ file: panbaiduApi.js ~ line 121 ~ panPathRoot", panPathRoot)
+        console.log("🚀 ~ file: panbaiduApi.js ~ line 131 ~ panPathRoot", panPathRoot)
 
-    }
-    , downLoadFileByDownUrl: (url, path) => {
+        let allFsid = this.panBaidu.getFileListAllFsid(panPathRoot)
 
+        let allDownUrl
+        if (allFsid) {
+            allDownUrl = this.panBaidu.getDownLoadUrlAllByFsidArray(allFsid)
+        } else {
+            console.log("🚀 ~ file: panbaiduApi.js ~ line 138 ~ downLoadFileByPath", "get-all-fsid-fail")
+            n.secex(5, "get-all-fsid-fail")
+            return null
+        }
+
+        let downUrl
+        if (allDownUrl) {
+            for (let idx in allDownUrl) {
+                if (allDownUrl[idx][filename] != undefined) {
+                    downUrl = allDownUrl[idx][filename]
+                    console.log("🚀 ~ file: panbaiduApi.js ~ line 152 ~ downUrl suc..\n", downUrl)
+                    return downUrl
+                }
+            }
+
+        } else {
+            console.log("🚀 ~ file: panbaiduApi.js ~ line 154 ~ downLoadFileByPath", "get-down-url-fail")
+            n.secex(5, "get-down-url-fail")
+        }
+
+        return null
+
+    },
+    /**
+     * 
+     * @param { 网盘路径 } path 
+     */
+    downLoadFileByPath: (panPath, localPath) => {
+        let downUrl = this.panBaidu.getDownUrlByPath(panPath)
+
+        if (downUrl) {
+            return this.panBaidu.downLoadFileByDownUrl(downUrl, localPath)
+        } else {
+            console.log("🚀 ~ file: panbaiduApi.js ~ line 171 ~ downUrl", downUrl)
+        }
+
+    },
+    downLoadStringByPath: (panPath) => {
+        let downUrl = this.panBaidu.getDownUrlByPath(panPath)
+        if (downUrl) {
+            return this.panBaidu.downLoadStringByUrl(downUrl)
+        } else {
+            console.log("🚀 ~ file: panbaiduApi.js ~ line 180 ~ downLoadStringByPath", downUrl)
+            return null
+        }
+    },
+    /**
+     * 
+     * @param {*} panPath 
+     * @param {*} localPath 
+     * @returns string 直接返回string
+     */
+    downLoadFileString: (panPath, localPath) => {
+        let arr = panPath.split("/")
+        if (arr.length < 2) {
+            console.log("🚀 ~ file: panbaiduApi.js ~ line 187 ~ length", length)
+            secex(5, "downLoadFileByPath-网盘路径格式错误" + panPath)
+            return null
+        }
+        let filename = arr[arr.length - 1]
+        let panPathRoot = ""
+        console.log("🚀 ~ file: panbaiduApi.js ~ line 193 ~ filename", filename)
+
+        for (let i = 1; i < arr.length - 1; i++) {
+            panPathRoot = panPathRoot + "/" + arr[i]
+        }
+        console.log("🚀 ~ file: panbaiduApi.js ~ line 198 ~ panPathRoot", panPathRoot)
+
+        let allFsid = this.panBaidu.getFileListAllFsid(panPathRoot)
+
+        let allDownUrl
+        if (allFsid) {
+            allDownUrl = this.panBaidu.getDownLoadUrlAllByFsidArray(allFsid)
+        } else {
+            console.log("🚀 ~ file: panbaiduApi.js ~ line 206 ~ downLoadFileByPath", "get-all-fsid-fail")
+            n.secex(5, "get-all-fsid-fail")
+            return null
+        }
+
+        let downUrl
+        if (allDownUrl) {
+            for (let idx in allDownUrl) {
+                if (allDownUrl[idx][filename] != undefined) {
+                    downUrl = allDownUrl[idx][filename]
+                }
+            }
+
+        } else {
+            console.log("🚀 ~ file: panbaiduApi.js ~ line 220 ~ downLoadFileByPath", "get-down-url-fail")
+            n.secex(5, "get-down-url-fail")
+        }
+
+        if (downUrl) {
+            return this.panBaidu.downLoadFileByDownUrl(downUrl, localPath)
+        } else {
+            console.log("🚀 ~ file: panbaiduApi.js ~ line 227 ~ downUrl", downUrl)
+        }
+
+    },
+
+    downLoadFileByDownUrl: (url, path) => {
+        toast("beginDownLoad-url=" + url
+            + "\npath=" + path)
         let body = req.get(url + "&" + req.qs(baiduReqMiddle.para)
             , null
             , baiduReqMiddle.head
@@ -130,14 +250,32 @@ api.panBaidu = {
             )
         )
         if (body) {
+            toast("downLoadFileByDownUrl-suc..begin write data " + path)
             files.writeBytes(path, body)
+            console.log("🚀 ~ file: panbaiduApi.js ~ line 244 ~ downLoadFileByDownUrl-suc..", path)
             return true
         } else {
-            console.log("🚀 ~ file: panbaiduApi.js ~ line 109 ~\n downLoadFileByDownUrl false", "")
+            console.log("🚀 ~ file: panbaiduApi.js ~ line 247 ~\n downLoadFileByDownUrl false", "")
             return false
         }
 
     },
+    /**
+     * 
+     * @param {*} url 
+     * @returns string 直接返回下载文件string
+     */
+    downLoadStringByUrl: (url) => {
+        toast("downLoadGetStringByUrl-url=" + url)
+        let body = req.get(url + "&" + req.qs(baiduReqMiddle.para)
+            , null
+            , baiduReqMiddle.head
+            , newMiddleware("")
+        )
+        console.log("🚀 ~ file: panbaiduApi.js ~ line 275 ~ downLoadStringByUrl suc..=", body)
+        return body
+    },
+
     /**
      * 下载百度网盘下指定路径下所有文件
      * Download all files specified in Baidu network disk
@@ -157,9 +295,9 @@ api.panBaidu = {
                     let downPath = localPath + keyPath
 
                     files.createWithDirs(downPath)
-                    console.log("🚀 ~ file: panbaiduApi.js ~ line 121 ~ ,\ndownLoadAllFileByRootPath ~ downPath", downPath)
+                    console.log("🚀 ~ file: panbaiduApi.js ~ line 296 ~ ,\ndownLoadAllFileByRootPath ~ downPath", downPath)
                     console.log("🚀 开始下载====================>", downPath)
-                    boolDown = this.downLoadFileByDownUrl(downUrl, downPath)
+                    boolDown = this.panBaidu.downLoadFileByDownUrl(downUrl, downPath)
 
                     toast("开始下载=====剩余" + count--)
                     if (!boolDown) {
@@ -202,9 +340,7 @@ api.panBaidu = {
         return retArr
 
     }
-    , downLoadFileByFsid: (fsid, path) => {
 
-    }
 
 }
 module.exports = api
