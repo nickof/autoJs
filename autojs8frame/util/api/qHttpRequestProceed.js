@@ -1,4 +1,4 @@
-const { default: n } = require("../../ts/n.js");
+let { default: n } = require("../../ts/n.js");
 
 const cfg = {
     debug: false
@@ -76,8 +76,9 @@ const urlHttpProceed = (url) => {
             return url
         }
         return "http://" + url
+    }else{
+        return "http://"+url
     }
-    return url
 }
 
 
@@ -94,6 +95,7 @@ req.get = (url, data, head, newMiddleware) => {
     log_function("req.GET")
     let newUrl
     let newData = {}
+
     let fullUrl
     let newHead = {}
 
@@ -125,9 +127,14 @@ req.get = (url, data, head, newMiddleware) => {
         if (newMiddleware.head != null) {
             for (key in newMiddleware.head) {
                 newHead[key] = newMiddleware.head[key]
+                console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 130 ~ newHeadPublic", 
+                "\n"+key+"="+ newMiddleware.head[key]  )
             }
+           
         }
 
+    } else{
+        newUrl=url
     }
 
     //log_function("GET")
@@ -151,7 +158,10 @@ req.get = (url, data, head, newMiddleware) => {
     //     newData[key] = data[key]
     // }
 
-    if (data == null && newMiddleware.para == undefined) {
+    if (data == undefined &&newMiddleware==undefined  ) {
+        fullUrl = newUrl
+    } 
+    else if (data == undefined && newMiddleware.para==null  ) {
         fullUrl = newUrl
     } else {
         //拼参数
@@ -160,8 +170,7 @@ req.get = (url, data, head, newMiddleware) => {
         }
         fullUrl = newUrl + "?" + req.qs(newData)  //https://pan.baidu.com/rest/2.0/xpan/file?access_token=xxxxxxxx&dir=
     }
-    console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 163 ~ fullUrl\n", fullUrl)
-    toastLog("🚀 ~ req.get ~ line 163 ~ fullUrl\n" + fullUrl)
+  
 
     if (head != undefined) {
         for (key in head) {
@@ -174,6 +183,9 @@ req.get = (url, data, head, newMiddleware) => {
     //         console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 138 ~ newHead\n", key + ":" + newHead[key])
     //     }
     // }
+
+    //console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 186 ~ fullUrl\n", fullUrl)
+
     let res;
     try {
         res = http.get(fullUrl, {
@@ -194,12 +206,15 @@ req.get = (url, data, head, newMiddleware) => {
     }
 
     let body
-    if (newMiddleware.bytes == undefined) {
+    if ( newMiddleware==undefined||newMiddleware.bytes == undefined) {
         body = res.body.string()
-        console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 156 ~ body\n", body)
+        console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 209 ~ body\n", body
+        +"\n"+fullUrl )
+        
     } else {
         body = res.body.bytes()
-        console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 159 ~ get return bytes", "")
+        console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 212 ~ get return bytes",
+        +"\n"+fullUrl )
     }
     return body
 

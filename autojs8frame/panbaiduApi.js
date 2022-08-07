@@ -1,12 +1,12 @@
 /**
  * 必须库
  */
-const req = require("./util/api/qHttpRequestProceed")
-const { default: n } = require("./ts/n.js");
-const { secex } = require("./util/api/q");
-const { newMiddleware } = require("./util/api/qHttpRequestProceed");
+let req = require("./util/api/qHttpRequestProceed")
+let { default: n } = require("./ts/n.js");
+let { secex } = require("./util/api/q");
+let { newMiddleware } = require("./util/api/qHttpRequestProceed");
 
-const baiduReqMiddle = req.newMiddleware("https://pan.baidu.com"
+let baiduReqMiddle = req.newMiddleware("https://pan.baidu.com"
     , { 'User-Agent': 'pan.baidu.com' }
     , { "access_token": "123.de0405292865b7e5371395a920272f44.Yao6mavGPBdRlEaUvIvqh7rxbnN-OPyq-7oEr7x.-vFdIA" }
     , null)

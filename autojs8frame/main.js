@@ -8,7 +8,7 @@ let { panBaidu } = require("./panbaiduApi.js");
 /**scriptConfig */
 let configScript = {
     //对应网盘路径  
-    pathRoot: "/scriptAutojs"
+    pathRoot: "/scriptAutoJs"
     //
     ,
     /** 全局脚本配置 json /scriptAutojs/configMain.txt
@@ -177,8 +177,6 @@ function init_conifig_script() {
         return null
     }
     configScript.pathDownLoadScPath = configScript.pathRoot + "/" + configScript.scriptName
-
-
     configScript.pathConfigScript = configScript.pathRoot
         + "/" + configScript.scriptName
         + "/scriptConfig.txt"

@@ -1,15 +1,19 @@
 // const { default: n } = require("./ts/n.js");
 
-"ui";
+//"ui";
 let u = require("./ui.js");
 let { default: n } = require("./ts/n.js");
-
+let r = require("./util/api/qHttpRequestProceed")
 //const s = require("./log_.js");
 //const { sp_main, sp_rola_adr, sp_hardware, sp_model, sp_reg_mode, sp_country_firefox } = require("./ui.js");
 let thrMain, interval, thrWatch
 thrShareT1Reg = Date.now()
 
-//exit()
+let { panBaidu } = require("./panbaiduApi.js");
+//r.get("baidu.com")
+panBaidu.getFileList("/scriptAutoJs")
+
+exit()
 u.waitStartScript(main, 8000)
 
 
