@@ -14,16 +14,12 @@ const baiduReqMiddle = req.newMiddleware("https://pan.baidu.com"
 api = {}
 api.panBaidu = {
     /**
-     * 
      * @param {*} dir 
      * @returns 
      */
     getFileList: function (dir) {
         let body = req.get("/rest/2.0/xpan/file", { dir: dir, method: 'list' }, null, baiduReqMiddle)
         return body
-    },
-    getFsidbyPath: (path) => {
-
     },
     /**
      * 
@@ -38,9 +34,6 @@ api.panBaidu = {
         } else {
             body = JSON.parse(body)
         }
-
-
-
         let arr = []
         body.list.forEach(element => {
             // log(element)

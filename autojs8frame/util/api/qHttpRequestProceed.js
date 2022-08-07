@@ -10,9 +10,14 @@ const req = {}
  * 
  * @param {*为空则取url} host 
  * @param {*publicHead {} } head 
- * @param {*publicPara} para 
- * @param {*} timeOut 
+ * @param {*publicPara 公共参数 } para 
+ * @param {* 毫秒,超时则取默认} timeOut 
  * @returns 
+ * @ex 
+ *  * const baiduReqMiddle = req.newMiddleware("https://pan.baidu.com"
+    , { 'User-Agent': 'pan.baidu.com' }
+    , { "access_token": "123.de0405292865b7e5371395a920272f44.Yao6mavGPBdRlEaUvIvqh7rxbnN-OPyq-7oEr7x.-vFdIA" }
+    , null)
  */
 req.newMiddleware = (host, head, para, timeOut, bytes) => {
 
@@ -76,54 +81,87 @@ const urlHttpProceed = (url) => {
 }
 
 
+/**
+ * 
+ * @param {*} url 
+ * @param {*} data 
+ * @param {*} head 
+ * @param {*} newMiddleware() 
+ * @returns 
+ */
 req.get = (url, data, head, newMiddleware) => {
 
     log_function("req.GET")
+    let newUrl
+    let newData = {}
+    let fullUrl
+    let newHead = {}
+
     if (newMiddleware != undefined) {
+
         if (newMiddleware.err != undefined) {
             n.secex(5, newMiddleware.err)
             return null
         }
+
+        if (newMiddleware.timeOut != undefined) {
+            http.__okhttp__.setTimeout(newMiddleware.timeOut);
+        } else {
+            http.__okhttp__.setTimeout(cfg.timeOut)
+        }
+
+        if (newMiddleware.host != undefined) {
+            newUrl = newMiddleware.host + url
+        } else {
+            newUrl = url
+        }
+
+        if (newMiddleware.para != undefined) {
+            for (let key in newMiddleware.para) {
+                newData[key] = newMiddleware.para[key]
+            }
+        }
+
+        if (newMiddleware.head != null) {
+            for (key in newMiddleware.head) {
+                newHead[key] = newMiddleware.head[key]
+            }
+        }
+
     }
 
     //log_function("GET")
-    let newUrl;
-    http.__okhttp__.setTimeout(newMiddleware.timeOut);
-    if (newMiddleware.host != "") {
-        newUrl = newMiddleware.host + url
-    } else {
-        newUrl = url
-    }
+    // if (newMiddleware.host != "") {
+    //     newUrl = newMiddleware.host + url
+    // } else {
+    //     newUrl = url
+    // }
 
     newUrl = urlHttpProceed(newUrl)
     //log(newUrl)
 
-    let newData = {}
-    if (newMiddleware.para != null) {
-        for (let key in newMiddleware.para) {
-            newData[key] = newMiddleware.para[key]
-        }
-    }
 
-    for (key in data) {
-        newData[key] = data[key]
-    }
+    // if (newMiddleware.para != null) {
+    //     for (let key in newMiddleware.para) {
+    //         newData[key] = newMiddleware.para[key]
+    //     }
+    // }
 
-    let fullUrl
-    if (data == null && newMiddleware.para == null) {
+    // for (key in data) {
+    //     newData[key] = data[key]
+    // }
+
+    if (data == null && newMiddleware.para == undefined) {
         fullUrl = newUrl
     } else {
+        //拼参数
+        for (key in data) {
+            newData[key] = data[key]
+        }
         fullUrl = newUrl + "?" + req.qs(newData)  //https://pan.baidu.com/rest/2.0/xpan/file?access_token=xxxxxxxx&dir=
     }
-
-    console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 119 ~ fullUrl\n", fullUrl)
-
-    let newHead = {}
-    if (newMiddleware.head != null) {
-        for (key in newMiddleware.head) {
-            newHead[key] = newMiddleware.head[key]
-        }
-    }
+    console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 163 ~ fullUrl\n", fullUrl)
+    toastLog("🚀 ~ req.get ~ line 163 ~ fullUrl\n" + fullUrl)
 
     if (head != undefined) {
         for (key in head) {
@@ -131,11 +169,11 @@ req.get = (url, data, head, newMiddleware) => {
         }
     }
 
-    if (newHead != null) {
-        for (let key in newHead) {
-            console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 138 ~ newHead\n", key + ":" + newHead[key])
-        }
-    }
+    // if (newHead != null) {
+    //     for (let key in newHead) {
+    //         console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 138 ~ newHead\n", key + ":" + newHead[key])
+    //     }
+    // }
     let res;
     try {
         res = http.get(fullUrl, {
@@ -146,7 +184,6 @@ req.get = (url, data, head, newMiddleware) => {
         console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 144 ~ error", error)
         return null
     }
-
 
     if (res.statusCode !== 200) {
         let body = res.body.string()
@@ -167,7 +204,6 @@ req.get = (url, data, head, newMiddleware) => {
     return body
 
 }
-
 
 
 /**

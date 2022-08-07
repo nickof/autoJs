@@ -1,5 +1,25 @@
+/**
+ * 添加控件 ui.layout()
+ * 控件事件 ui_event()
+ * 添加需保存的ui控件 save_ui()
+ * 添加需加载的控件 load_ui()
+ */
+function index() {
+
+    //添加控件
+    ui_layout()
+    //添加需保存的ui控件 save_ui()
+    save_ui()
+    //1添加需加载的控件
+    load_ui()
+    //加载脚本界面, 自动运行时间调整 setTimeout()
+    waitStartScript(scriptFunction, time)
+}
+
+let { secex } = require("./util/api/q")
 
 var uiEx = {
+
     sp_main: "sp_main"
     , sp_model: "sp_model"
     , sp_rola_adr: "sp_rola_adr"
@@ -11,38 +31,90 @@ var uiEx = {
     , autoSec: 8
     , bt_save: ''
     , scriptAuto: false
-    , wait_start_script: wait_start_script
+    , waitStartScript: waitStartScript
+    , envFunMain: ""
     , ui_set: function () {
         ui_set_()
     }
+
 }
 
 module.exports = uiEx
 //exports.uiEx = uiEx
-canCelScript = false
+let cancelScript = false
 
 function init() {
     //uiEx.sp_main = ui.sp_main.getSelectedItemPosition()
 }
 
-function wait_start_script(fun) {
-    interval = setInterval(function () {
-        log("main-intervar")
-        bool_run(fun)
-    }, 1000)
-}
-
-function bool_run(fun) {
-
-    log("bool_run_" + uiEx.scriptAuto)
-    if (uiEx.scriptAuto) {
-        clearInterval(interval)
-        fun()
-    } else {
-        log("boolRunScript-ui_.scriptAuto=" + u.scriptAuto)
+function waitStartScript(funMain, timeOut) {
+    uiEx.envFunMain = funMain
+    uiEx.ui_set()
+    $settings.setEnabled("foreground_service", true);
+    if (typeof funMain != "function") {
+        secex(5, "wait_startScript tpye err="
+            + typeof funMain
+            + ",need function")
+        return null
     }
 
+    if (timeOut == undefined) {
+        secex(1, "wait_startScript undefined set 10sec")
+        timeOut = 10 * 1000
+    }
+
+    let sec = timeOut / 1000 - 1
+    let interval = setInterval(function () {
+
+        log("boolRunScript")
+        ui.tx_leftTime.setText("剩余时间" + sec + "-点击取消自动运行")
+        log("自动运行=" + uiEx.scriptAuto)
+
+        sec = sec - 1
+        if (cancelScript) {
+            clearInterval(interval)
+            ui.tx_leftTime.setText("已取消自动运行")
+            ui.tx_leftTime.attr("bg", "#ff0000")
+        } else {
+            if (uiEx.scriptAuto) {
+                clearInterval(interval)
+                //ui.finish()
+                $settings.setEnabled("sc_foregroud_sever", true)
+                funMain()
+            } else {
+                log("boolRunScript-ui_.scriptAuto=" + uiEx.scriptAuto)
+            }
+        }
+
+    }, 1000)
+
+    setTimeout(() => {
+
+        clearInterval(interval)
+        console.log("🚀 ~ file: ui.js ~ line 93 ~ setTimeout ~ cancelScript",
+            cancelScript)
+
+        if (!cancelScript) {
+
+            toast("未检测到手动中止,即将启动脚本")
+            ui.tx_leftTime.setText("已自动启动..")
+            log("未检测到手动中止,即将启动脚本")
+            uiEx.scriptAuto = true
+            $settings.setEnabled("sc_foregroud_sever", true)
+            funMain()
+
+        }
+    }, timeOut);
+
+    // setTimeout(() => {
+    //     clearInterval( interval )
+    // }, 12000);
+
+
 }
+
+
+
 
 // uiEx.run=function(){
 
@@ -148,8 +220,8 @@ function readUiConfig(key) {
 }
 
 function ui_set_() {
-    ui_layout()
 
+    ui_layout()
     // ui.bt_save.on("click", () => {
     //     ui.finish()
     // });
@@ -164,27 +236,27 @@ function ui_set_() {
     load_ui()
 
 
-    var interval = setInterval(() => {
-        ui.tx_leftTime.setText("剩余时间" + sec + "-点击取消自动运行")
-        log("自动运行=" + uiEx.scriptAuto)
-        sec = sec - 1
-        if (canCelScript) {
-            clearInterval(interval)
-            ui.tx_leftTime.setText("已取消自动运行")
-            ui.tx_leftTime.attr("bg", "#ff0000")
-        }
-    }, 1000)
+    // let interval = setInterval(() => {
+    //     ui.tx_leftTime.setText("剩余时间" + sec + "-点击取消自动运行")
+    //     log("自动运行=" + uiEx.scriptAuto)
+    //     sec = sec - 1
+    //     if (canCelScript) {
+    //         clearInterval(interval)
+    //         ui.tx_leftTime.setText("已取消自动运行")
+    //         ui.tx_leftTime.attr("bg", "#ff0000")
+    //     }
+    // }, 1000)
 
-    setTimeout(() => {
-        clearInterval(interval)
-        if (!canCelScript) {
-            toast("未检测到手动中止,即将启动脚本")
-            ui.tx_leftTime.setText("已自动启动..")
-            log("未检测到手动中止,即将启动脚本")
-            uiEx.scriptAuto = true
-            //ui.finish()
-        }
-    }, 8000);
+    // setTimeout(() => {
+    //     clearInterval(interval)
+    //     if (!canCelScript) {
+    //         toast("未检测到手动中止,即将启动脚本")
+    //         ui.tx_leftTime.setText("已自动启动..")
+    //         log("未检测到手动中止,即将启动脚本")
+    //         uiEx.scriptAuto = true
+    //         //ui.finish()
+    //     }
+    // }, 8000);
 
     ui_event()
 
@@ -211,11 +283,9 @@ function ui_event() {
 
     ui.tx_leftTime.on("click", () => {
         uiEx.scriptAuto = false
-        //ui.bt_stopauto.dispose()
-        canCelScript = true
+        cancelScript = true
         //toast("取消自动动启动脚本")
     })
-
 
     //保存ui,启动按钮
     ui.bt_save.on("click", () => {
@@ -223,13 +293,15 @@ function ui_event() {
         // log("start script..")
         save_ui()
         toast("manual start..")
-        canCelScript = true
+        cancelScript = true
         uiEx.scriptAuto = true
 
         setTimeout(() => {
             ui.tx_leftTime.setText("已手动启动.")
             ui.tx_leftTime.attr("bg", "#9ed900")
         }, 2000)
+        $settings.setEnabled("script_foreground", true)
+        uiEx.envFunMain()
 
         //ui.finish()
         //main()

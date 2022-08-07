@@ -4,11 +4,11 @@ qEx.secex = (sec, str) => {
     let t = sec
     for (let i = 0; i < sec; i++) {
         toast(str + "\n" + "sec:" + t--)
+        //sleep(1000)
     }
 }
 ///scriptAutoJs/test/util/api/qHttpRequestProceed.js
 module.exports = qEx
-
 
 // let panBaidu = {
 //     httpGetGetFileListInfo: {

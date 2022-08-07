@@ -1,9 +1,9 @@
+
 //"ui";
-const q = require("./util/api/qHttpRequestProceed.js")
-const u = require("./ui.js");
-let { default: n2 } = require("./ts/n.js");
-const { panBaidu } = require("./panbaiduApi.js");
-const { q2 } = require("./util/api/q.js");
+// const q = require("./util/api/qHttpRequestProceed.js")
+// const u = require("./ui.js");
+let { default: n2main } = require("./ts/n.js");
+let { panBaidu } = require("./panbaiduApi.js");
 
 /**scriptConfig */
 let configScript = {
@@ -34,7 +34,6 @@ let configScript = {
 
 }
 /**scriptConfig */
-
 // let a = panBaidu.getFileList("/scriptAutojs/test")
 // let res = http.get("https://pan.baidu.com/doc/edit?action=edit&channel=00000000000000000000000000000000&errmsg=Auth%20Login%20Sucess&errno=0&from=guanjia&fsid=884487022435144&path=%2FscriptAutoJs%2Ftest%2FscriptConfig.PanD&ssnerror=0")
 // log(res.body.string())
@@ -45,26 +44,29 @@ const main = () => {
 
     while (init_conifig_script() == null) { }
 
-
     while (true) {
 
         if (configScript.localScritpVer == undefined) {
-            n2.secex(3, "check local ver fail,begin download from " + configScript.pathDownLoadScPath)
+            n2main.secex(3, "check local ver fail,begin download from " + configScript.pathDownLoadScPath)
             downPanScriptToLocal(configScript.pathDownLoadScPath)
             break
         } else if (configScript.panScriptVer != configScript.localScritpVer) {
-            n2.secex(3, "panVer=" + configScript.panScriptVer + ",\n"
+            n2main.secex(3, "panVer=" + configScript.panScriptVer + ",\n"
                 + "local ver=" + configScript.localScritpVer + "\n updateScript="
                 + configScript.pathDownLoadScPath)
             downPanScriptToLocal(configScript.pathDownLoadScPath)
             break
         } else {
-            n2.secex(1, "no need to updateScript")
+            n2main.secex(1, "no need to updateScript")
             break
         }
 
         sleep(500)
     }
+    console.log("🚀 ~ file: main.js ~ line 66 ~ main ~ pathLocalScriptMain\n"
+        , configScript.pathLocalScriptMain)
+    engines.execScriptFile( configScript.pathLocalScriptMain )
+
 
 }
 
@@ -73,7 +75,7 @@ main()
 /**scriptConfig*/
 //panBaidu = panBaidu.panBaidu
 //panBaidu.downLoadFileByPath("/scriptAutojs/22.txt", "/sdcard/22.txt")
-// n2.secex(5, configScript.pathConfigMain)
+// n2main.secex(5, configScript.pathConfigMain)
 
 function getConfigMain() {
 
@@ -95,7 +97,7 @@ function getConfigMain() {
             // }
             break
         } else {
-            n2.secex(5, "getScriptPath-err")
+            n2main.secex(5, "getScriptPath-err")
         }
         sleep(500)
 
@@ -116,7 +118,7 @@ function getConfigScript() {
             return configScript_
 
         } else {
-            n2.secex(5, "getLocalScriptMainName-err=\npath=" + configScript.pathConfigScript
+            n2main.secex(5, "getLocalScriptMainName-err=\npath=" + configScript.pathConfigScript
                 + "\n" + stringConfig)
         }
         sleep(500)
@@ -129,7 +131,7 @@ function getSciptVer(scriptConfig) {
     if (scriptConfig.ver != undefined) {
         return scriptConfig.ver
     } else {
-        n2.secex(5, "scriptConfig-ver-json-err-do not have key ver-err")
+        n2main.secex(5, "scriptConfig-ver-json-err-do not have key ver-err")
         return null
     }
 }
@@ -139,7 +141,7 @@ function getScName(configMain) {
     if (configMain.name != undefined) {
         return configMain.name
     } else {
-        n2.secex(5, "scriptName-json-err-do not have key name-err")
+        n2main.secex(5, "scriptName-json-err-do not have key name-err")
         return null
     }
 }
@@ -152,7 +154,7 @@ function getJsonVByObj(jsonObj, key) {
     if (jsonObj[key] != undefined) {
         return jsonObj[key]
     } else {
-        n2.secex(5, " getJsonVByObj-err-do not have key " + key)
+        n2main.secex(5, " getJsonVByObj-err-do not have key " + key)
         return null
     }
 }
@@ -220,7 +222,7 @@ function init_conifig_script() {
 function getLocalScriptVer() {
 
     if (!files.exists(configScript.pathLocalScript + "/scriptConfig.txt")) {
-        n2.secex(5, "localScript config file not exist,may be first run.")
+        n2main.secex(5, "localScript config file not exist,may be first run.")
         return null
     }
 
@@ -229,9 +231,9 @@ function getLocalScriptVer() {
         let jobj = JSON.parse(str)
         let ver = getJsonVByObj(jobj, 'ver')
         if (ver == undefined) {
-            n2.secex(5, "getLocalScriptVer ver-err-ver null,maybe json do not have key ver")
+            n2main.secex(5, "getLocalScriptVer ver-err-ver null,maybe json do not have key ver")
         } else
-            n2.secex(3, "get local script ver suc..ver=" + ver)
+            n2main.secex(3, "get local script ver suc..ver=" + ver)
         return ver
     }
 }
