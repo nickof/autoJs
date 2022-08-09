@@ -170,6 +170,10 @@ api.panBaidu = {
         }
 
     },
+    getAccessToken: () => {
+        let ret = req.get("http://openapi.baidu.com/oauth/2.0/authorize"
+            , { "response_type":"" } )
+    },
     downLoadStringByPath: (panPath) => {
         let downUrl = this.panBaidu.getDownUrlByPath(panPath)
         if (downUrl) {

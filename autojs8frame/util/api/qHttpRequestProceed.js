@@ -50,7 +50,6 @@ req.newMiddleware = (host, head, para, timeOut, bytes) => {
     } else if (typeof timeOut != "number") {
         err = "timeOut type err type=" + typeof (timeOut) + " ,need number"
     }
-    log_function("newMiddleware")
 
     return {
         host: host, timeOut: timeOut, para: para, head: head, err: err, bytes: bytes
@@ -76,8 +75,8 @@ const urlHttpProceed = (url) => {
             return url
         }
         return "http://" + url
-    }else{
-        return "http://"+url
+    } else {
+        return "http://" + url
     }
 }
 
@@ -99,6 +98,9 @@ req.get = (url, data, head, newMiddleware) => {
     let fullUrl
     let newHead = {}
 
+    //newMiddleware.host = ""
+    //url = "http://54.241.117.38:10000/platform/ping"
+
     if (newMiddleware != undefined) {
 
         if (newMiddleware.err != undefined) {
@@ -107,9 +109,11 @@ req.get = (url, data, head, newMiddleware) => {
         }
 
         if (newMiddleware.timeOut != undefined) {
+            console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 110 ~ timeOutMiddle", newMiddleware.timeOut)
             http.__okhttp__.setTimeout(newMiddleware.timeOut);
         } else {
             http.__okhttp__.setTimeout(cfg.timeOut)
+            console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 113 ~ timeOutDefault=", timeOut)
         }
 
         if (newMiddleware.host != undefined) {
@@ -127,14 +131,14 @@ req.get = (url, data, head, newMiddleware) => {
         if (newMiddleware.head != null) {
             for (key in newMiddleware.head) {
                 newHead[key] = newMiddleware.head[key]
-                console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 130 ~ newHeadPublic", 
-                "\n"+key+"="+ newMiddleware.head[key]  )
+                console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 130 ~ newHeadPublic",
+                    "\n" + key + "=" + newMiddleware.head[key])
             }
-           
+
         }
 
-    } else{
-        newUrl=url
+    } else {
+        newUrl = url
     }
 
     //log_function("GET")
@@ -158,10 +162,10 @@ req.get = (url, data, head, newMiddleware) => {
     //     newData[key] = data[key]
     // }
 
-    if (data == undefined &&newMiddleware==undefined  ) {
+    if (data == undefined && newMiddleware == undefined) {
         fullUrl = newUrl
-    } 
-    else if (data == undefined && newMiddleware.para==null  ) {
+    }
+    else if (data == undefined && newMiddleware.para == null) {
         fullUrl = newUrl
     } else {
         //拼参数
@@ -170,7 +174,7 @@ req.get = (url, data, head, newMiddleware) => {
         }
         fullUrl = newUrl + "?" + req.qs(newData)  //https://pan.baidu.com/rest/2.0/xpan/file?access_token=xxxxxxxx&dir=
     }
-  
+
 
     if (head != undefined) {
         for (key in head) {
@@ -187,10 +191,27 @@ req.get = (url, data, head, newMiddleware) => {
     //console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 186 ~ fullUrl\n", fullUrl)
 
     let res;
+    for (key in newHead) {
+        console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 191 ~ newHead\n",
+            key + "," + newHead[key])
+        //newHead[key] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.81 Safari/537.36 Edg/104.0.1293.47"
+    }
+
+    //
+    //text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+    // newHead["Accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
+    // for (key in newHead) {
+    //     console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 198 ~ newHead\n",
+    //         key + "," + newHead[key])
+    //     //newHead[key]="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.81 Safari/537.36 Edg/104.0.1293.47"
+    // }
+
+    //fullUrl = "http://54.241.117.38:10000/platform/ping"
     try {
         res = http.get(fullUrl, {
             headers: newHead
         });
+        //res = http.get(fullUrl);
     } catch (error) {
         n.secex(5, "get-catch-err=" + error)
         console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 144 ~ error", error)
@@ -199,22 +220,22 @@ req.get = (url, data, head, newMiddleware) => {
 
     if (res.statusCode !== 200) {
         let body = res.body.string()
-        console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 149 ~ statusCode-err", res.statusCode + "\n"
+        console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 208 ~ statusCode-err", res.statusCode + "\n"
             + "url=" + fullUrl
             + "\nbody=" + body)
         return null
     }
 
     let body
-    if ( newMiddleware==undefined||newMiddleware.bytes == undefined) {
+    if (newMiddleware == undefined || newMiddleware.bytes == undefined) {
         body = res.body.string()
         console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 209 ~ body\n", body
-        +"\n"+fullUrl )
-        
+            + "\n" + fullUrl)
+
     } else {
         body = res.body.bytes()
         console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 212 ~ get return bytes",
-        +"\n"+fullUrl )
+            +"\n" + fullUrl)
     }
     return body
 
@@ -259,14 +280,14 @@ req.get = (url, data, head, newMiddleware) => {
  */
 /*
 req.GET = (url, data, head, proceed) => {
-
+ 
     //log_function("GET")
     if (proceed.timeOut == undefined) {
         http.__okhttp__.setTimeout(cfg.timeOut);
     } else {
         http.__okhttp__.setTimeout(proceed.timeOut);
     }
-
+ 
     let newUrl;
     if (proceed.host != undefined) {
         if (typeof proceed.host == "string") {
@@ -275,15 +296,15 @@ req.GET = (url, data, head, proceed) => {
             rlog.Error("host is not type of string")
             return null
         }
-
+ 
     } else {
         newUrl = url
     }
-
+ 
     newUrl = urlHttpProceed(newUrl)
     let newData = proceed.para(data);
     let fullUrl = newUrl + "?" + qs(newData); //https://pan.baidu.com/rest/2.0/xpan/file?access_token=xxxxxxxx&dir=
-
+ 
     if (cfg.debug) {
         log(fullUrl)
     }
@@ -291,13 +312,13 @@ req.GET = (url, data, head, proceed) => {
         headers: proceed.head(head)
     });
     if (res.statusCode !== 200) {
-
+ 
         return null
     }
     // log("statusCode=" + res.statusCode)
     // log("body=" + res.body.string())
     return proceed.resp(res)
-
+ 
 }
 */
 req.POST = (url, data, head, prceed) => { }
@@ -307,5 +328,3 @@ module.exports = req
 function log_function(str) {
     log("===" + str + "===")
 }
-
-
