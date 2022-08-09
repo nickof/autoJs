@@ -8,7 +8,7 @@ let { newMiddleware } = require("./util/api/qHttpRequestProceed");
 
 let baiduReqMiddle = req.newMiddleware("https://pan.baidu.com"
     , { 'User-Agent': 'pan.baidu.com' }
-    , { "access_token": "123.de0405292865b7e5371395a920272f44.Yao6mavGPBdRlEaUvIvqh7rxbnN-OPyq-7oEr7x.-vFdIA" }
+    , { "access_token": "123.60643393c6dd9e453b856e4ab3944f99.YGi9VUOxvO3I9-Is6Kw_wA-CqKWiN7r4t_yIC4w.sCYV9w" }
     , null)
 
 api = {}
@@ -171,8 +171,13 @@ api.panBaidu = {
 
     },
     getAccessToken: () => {
-        let ret = req.get("http://openapi.baidu.com/oauth/2.0/authorize"
-            , { "response_type":"" } )
+        console.log("🚀 ~ file: panbaiduApi.js ~ line 174 ~ getAccessToken", "-run")
+        let body = req.get("http://openapi.baidu.com/oauth/2.0/authorize"
+            , { "response_type":"token"
+            ,"client_id":"BsD1zL3GLtnA2h3fWCZyPEvdziG418jz"
+        ,"redirect_uri":"oob"
+        ,"scope":"basic,netdisk" },null,null )
+        console.log("🚀 ~ file: panbaiduApi.js ~ line 180 ~ body", body)
     },
     downLoadStringByPath: (panPath) => {
         let downUrl = this.panBaidu.getDownUrlByPath(panPath)

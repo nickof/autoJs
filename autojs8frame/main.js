@@ -38,7 +38,7 @@ let configScript = {
 // let res = http.get("https://pan.baidu.com/doc/edit?action=edit&channel=00000000000000000000000000000000&errmsg=Auth%20Login%20Sucess&errno=0&from=guanjia&fsid=884487022435144&path=%2FscriptAutoJs%2Ftest%2FscriptConfig.PanD&ssnerror=0")
 // log(res.body.string())
 
-//exit()
+
 
 const main = () => {
 

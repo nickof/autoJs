@@ -207,6 +207,7 @@ req.get = (url, data, head, newMiddleware) => {
     // }
 
     //fullUrl = "http://54.241.117.38:10000/platform/ping"
+    console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 213 ~ fullUrl=", fullUrl)
     try {
         res = http.get(fullUrl, {
             headers: newHead
