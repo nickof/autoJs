@@ -4,6 +4,8 @@
 // const u = require("./ui.js");
 let { default: n2main } = require("./ts/n.js");
 let { panBaidu } = require("./panbaiduApi.js");
+let req = require("./util/api/qHttpRequestProceed.js");
+//let req = require("./util/api/qHttpRequestProceed.js");
 
 /**scriptConfig */
 let configScript = {
@@ -38,8 +40,9 @@ let configScript = {
 // let res = http.get("https://pan.baidu.com/doc/edit?action=edit&channel=00000000000000000000000000000000&errmsg=Auth%20Login%20Sucess&errno=0&from=guanjia&fsid=884487022435144&path=%2FscriptAutoJs%2Ftest%2FscriptConfig.PanD&ssnerror=0")
 // log(res.body.string())
 
+// log(panBaidu.getAccessToken())
 
-
+// exit()
 const main = () => {
 
     while (init_conifig_script() == null) { }
@@ -65,7 +68,7 @@ const main = () => {
     }
     console.log("🚀 ~ file: main.js ~ line 66 ~ main ~ pathLocalScriptMain\n"
         , configScript.pathLocalScriptMain)
-    engines.execScriptFile( configScript.pathLocalScriptMain )
+    engines.execScriptFile(configScript.pathLocalScriptMain)
 
 
 }

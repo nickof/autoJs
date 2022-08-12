@@ -5,7 +5,7 @@ const cfg = {
     , timeOut: 20000
 }
 
-const req = {}
+let req = {}
 /**
  * 
  * @param {*为空则取url} host 
@@ -230,8 +230,8 @@ req.get = (url, data, head, newMiddleware) => {
     let body
     if (newMiddleware == undefined || newMiddleware.bytes == undefined) {
         body = res.body.string()
-        console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 209 ~ body\n", body
-            + "\n" + fullUrl)
+        // console.log("🚀 ~ file: qHttpRequestProceed.js ~ line 233 ~ body\n", body
+        //     + "\n" + fullUrl)
 
     } else {
         body = res.body.bytes()

@@ -6,11 +6,33 @@ let { default: n } = require("./ts/n.js");
 let { secex } = require("./util/api/q");
 let { newMiddleware } = require("./util/api/qHttpRequestProceed");
 
+function getAccessToken() {
+
+    let str = req.get("https://gitee.com/nickof/nick/blob/master/token")
+    if (str) {
+        let pos = str.indexOf("123.")
+        if (pos) {
+            let token = str.substring(pos, pos + 83)
+            return token
+        } else {
+            console.log("🚀 ~ file: panbaiduApi.js ~ line 183 ~ not find token", "")
+            return null
+        }
+
+    } else {
+        console.log("🚀 ~ file: panbaiduApi.js ~ line 185 ~  get token fail", "")
+        return null
+    }
+
+
+}
+
 let baiduReqMiddle = req.newMiddleware("https://pan.baidu.com"
     , { 'User-Agent': 'pan.baidu.com' }
-    , { "access_token": "123.60643393c6dd9e453b856e4ab3944f99.YGi9VUOxvO3I9-Is6Kw_wA-CqKWiN7r4t_yIC4w.sCYV9w" }
+    // , { "access_token": "123.60643393c6dd9e453b856e4ab3944f99.YGi9VUOxvO3I9-Is6Kw_wA-CqKWiN7r4t_yIC4w.sCYV9w" }
+    , { "access_token": getAccessToken() }
     , null)
-
+// baiduReqMiddle.access_token = getAccessToken()
 api = {}
 api.panBaidu = {
     /**
@@ -170,15 +192,6 @@ api.panBaidu = {
         }
 
     },
-    getAccessToken: () => {
-        console.log("🚀 ~ file: panbaiduApi.js ~ line 174 ~ getAccessToken", "-run")
-        let body = req.get("http://openapi.baidu.com/oauth/2.0/authorize"
-            , { "response_type":"token"
-            ,"client_id":"BsD1zL3GLtnA2h3fWCZyPEvdziG418jz"
-        ,"redirect_uri":"oob"
-        ,"scope":"basic,netdisk" },null,null )
-        console.log("🚀 ~ file: panbaiduApi.js ~ line 180 ~ body", body)
-    },
     downLoadStringByPath: (panPath) => {
         let downUrl = this.panBaidu.getDownUrlByPath(panPath)
         if (downUrl) {
@@ -188,6 +201,7 @@ api.panBaidu = {
             return null
         }
     },
+
     /**
      * 
      * @param {*} panPath 

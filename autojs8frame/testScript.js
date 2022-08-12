@@ -44,11 +44,6 @@ function main_control() {
             log(ret.bounds())
         }
 
-        // if (ret) {
-        //     log(ret.click() + "-" + ret.bounds())
-        // } else
-        //     log("not found.")
-        //app.launchPackage("com.tencent.mm")
 
         sleep(2000)
     }

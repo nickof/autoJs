@@ -11,9 +11,6 @@ thrShareT1Reg = Date.now()
 
 let { panBaidu } = require("./panbaiduApi.js");
 //r.get("baidu.com")
-panBaidu.getFileList("/scriptAutoJs")
-
-exit()
 u.waitStartScript(main, 8000)
 
 
