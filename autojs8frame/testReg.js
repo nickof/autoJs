@@ -1,20 +1,31 @@
 // const { default: n } = require("./ts/n.js");
 
-//"ui";
-let u = require("./ui.js");
+"ui";
+log(  "testReg.Run" )
 let { default: n } = require("./ts/n.js");
+log("ts.n.js init")
+
 let r = require("./util/api/qHttpRequestProceed")
-//const s = require("./log_.js");
-//const { sp_main, sp_rola_adr, sp_hardware, sp_model, sp_reg_mode, sp_country_firefox } = require("./ui.js");
+
+let u = require("./ui.js");
 let thrMain, interval, thrWatch
 thrShareT1Reg = Date.now()
 
-let { panBaidu } = require("./panbaiduApi.js");
+//let { panBaidu } = require("./panbaiduApi.js");
 //r.get("baidu.com")
-u.waitStartScript(main, 8000)
+init()
+
+// n.c_dsp(yy允许)
+
+app.openAppSetting("com.getsurfboard")
+exit()
+
+u.waitStartScript(main, 10000)
 
 
 var envCurCountry, envCurPhone, verifyCodePar
+let dd登陆line,yy允许
+
 function init() {
 
     init_ui()
@@ -29,7 +40,7 @@ function init() {
     configRegFailNum = 0
     pathScript = "/sdcard/nk/script.txt"
     files.ensureDir(pathScript)
-    files.write(pathScript, "1");
+    files.write( pathScript, "1" );
     log("读取启动文本=" + files.read(pathScript))
     //  log_init()
 
@@ -39,9 +50,12 @@ var sp_main, sp_model, sp_ip, sp_rola_adr, sp_hardware, sp_country_firefox
 function init_ui() {
 
     log(u.sp_main)
+
     sp_main = u.readUi(u.sp_main)
     sp_model = u.readUi(u.sp_model)
     sp_ip = u.readUi(u.sp_ip)
+    console.log("🚀 ~ file: testReg.js ~ line 54 ~ init_ui ~ sp_ip", sp_ip)
+    //exit()
     sp_rola_adr = u.readUi(u.sp_rola_adr)
     sp_hardware = u.readUi(u.sp_hardware)
     sp_reg_mode = u.readUi(u.sp_reg_mode)
@@ -60,7 +74,7 @@ function init_ui() {
 
 function main_control() {
 
-    auto()
+    //auto()
     toast("start script")
     test()
 
@@ -82,9 +96,9 @@ function main_control() {
 
 function main() {
 
+    log("main-run")
     init()
 
-    log("main")
     //clearInterval(interval)
     // let ret = n.wait([{ "dC": "微信" }])
     // if (ret) {
@@ -641,7 +655,8 @@ function
 
     // init_rui()
     //bool_line_GoRound()
-    regLineGenearal(keyLy)
+    
+    //regLineGenearal(keyLy)
 
     // while (true) {
     //     log("main-thread=" + threads.currentThread())
@@ -650,6 +665,7 @@ function
     // }
 }
 
+surfboardRun()
 
 function init_rui() {
 
@@ -724,7 +740,49 @@ function get_configNum(key) {
     return 0
 }
 
+
+
+
 function surfboardRun() {
+    
+    
+    // Dim boolS=0
+    // Dim t1=time()
+    
+    // KillApp appSurfboard
+    // Delay 1000
+    
+    // get_country()
+    // TracePrint "surfboard_run"
+    // rola_force_change_ip( envCurCountry ) 
+    // TracePrint "rola_force_change_ip after"
+    
+    // node.release
+    // Do
+    
+    
+//         ShowMessage "surfboard_run"
+//         run_( appSurfboard )
+        
+// //    		If node.click ( surfGloaber ) Then 
+//         If node.get_node ( surfRule_based ) Then 
+//             Exit Do	
+//         Else 
+//             //node.wait_true_ex( surfSwitch )
+//             node.click( surfSwitch )
+//             node.wait_true_ex( surfSt,surfRule_based ,5,Null )
+        
+//         End If
+        
+//         If Time() - t1 > 60 Then 
+//             t1 = Time()
+//             q.rest_app( appSurfboard )
+//         End If
+        
+//         Delay 500
+        
+//     Loop
+
 
 }
 
@@ -736,6 +794,8 @@ function watch_disturb_proceed() {
     n.c_dsp(errWindow)
     if (n.c_dsp(errReport))
         n.c_dsp(errAndroidNotNow)
+
+    
 
 }
 

@@ -14,10 +14,12 @@ function index() {
     load_ui()
     //加载脚本界面, 自动运行时间调整 setTimeout()
     waitStartScript(scriptFunction, time)
+
 }
 
 let { secex } = require("./util/api/q")
 
+let storageUi
 var uiEx = {
 
     sp_main: "sp_main"
@@ -48,6 +50,7 @@ function init() {
 }
 
 function waitStartScript(funMain, timeOut) {
+    console.log("🚀 ~ file: ui.js ~ line 53  ~ waitStartScript", "")
     uiEx.envFunMain = funMain
     uiEx.ui_set()
     $settings.setEnabled("foreground_service", true);
@@ -129,7 +132,7 @@ function waitStartScript(funMain, timeOut) {
 // ui_set()
 
 function ui_layout() {
-
+    
     ui.layout(
         <drawer id="drawer">
             <vertical>
@@ -213,14 +216,18 @@ function ui_layout() {
 }
 
 function readUiConfig(key) {
+
     if (!storageUi) {
         storageUi = storages.create("ui_settinglggirlggir@163.com")
     }
+
     return storageUi.get(key, null)
 }
 
 function ui_set_() {
 
+
+    
     ui_layout()
     // ui.bt_save.on("click", () => {
     //     ui.finish()

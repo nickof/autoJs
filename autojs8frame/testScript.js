@@ -2,7 +2,7 @@
 
 let { default: n } = require("./ts/n.js");
 var logUi
-const ui_ = require("./ui.js");
+let ui_ = require("./ui.js");
 var mainThr, interval, watchThr
 
 // wait_startScript()
@@ -41,13 +41,14 @@ function main_control() {
         log("script-running.")
         let ret = n.wait(descContains("1"))
         if (ret) {
-            log(ret.bounds())
+            log( ret.bounds() )
         }
 
-
         sleep(2000)
+   
     }
 
+    
 }
 
 function show(text) {

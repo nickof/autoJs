@@ -1,4 +1,5 @@
 import { autojs } from "__app__";
+import { time } from "__console__";
 
 export default {
     uiSelectCondition
@@ -22,7 +23,47 @@ export default {
     , get
     , thread_force_stop
     , get_configNum
+    ,killApp
 }
+
+function killApp( nameOrPkg:string,stopNode:AutoJs.UiSelector,okNode:AutoJs.UiSelector ){
+    
+    let name = getPackageName(nameOrPkg);//通过app名称获取包名
+    if(!name){//如果无法获取到包名，判断是否填写的就是包名
+        if(getAppName(nameOrPkg)){
+            name = nameOrPkg;//如果填写的就是包名，将包名赋值给变量
+        }else{
+            return false;
+        }   
+    }
+
+    let boolS=0,tp
+    let t1=Date.now()
+    
+    let  stopNodeNew,okNodeNew
+    stopNodeNew=[ stopNode ]
+    okNodeNew=okNode 
+    if(stopNode==null){
+        stopNodeNew=[ textMatches(/(.*强.*|.*停.*|.*结.*)/),textMatches(/(.*force.*|.*stop.*)/) ]
+        okNodeNew=textMatches(/(.*确.*|.*定.*)/)
+    }
+    
+    app.openAppSetting( name )
+    wait( text( app.getAppName(name) ),5 )
+    while (true) {
+        tp=g ( stopNodeNew )
+        if (tp) {
+            
+        }
+
+        sleep(500)
+    }
+
+// ————————————————
+// 版权声明：本文为CSDN博主「咸散人士」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+// 原文链接：https://blog.csdn.net/weixin_44786692/article/details/125469745
+}
+
 
 function secex(sec: number, str: string) {
     let t = sec
@@ -276,10 +317,10 @@ function getNodeNormal(jobjCondition: AutoJs.UiSelector): AutoJs.UiObject | null
  * text().desc()
  * [{ "c":condition,"pa":1,"ch":[1,2,3] }]
  * { "c":condition,"pa":1,"ch":[1,2,3] }
- * [ condition1,condition2 ]
+ * [ condition1,condition2 ] 满足任一条件即可
  * @returns 
  */
-function g(jobjCondition: any[]): AutoJs.UiObject | null {
+function g(jobjCondition: any[] | AutoJs.UiSelector[]  ): AutoJs.UiObject | null {
 
     let uiObj;
     if (Array.isArray(jobjCondition)) {

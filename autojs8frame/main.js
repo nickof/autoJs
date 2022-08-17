@@ -59,7 +59,7 @@ const main = () => {
                 + configScript.pathDownLoadScPath)
             downPanScriptToLocal(configScript.pathDownLoadScPath)
             break
-        } else {
+        } else { 
             n2main.secex(1, "no need to updateScript")
             break
         }
